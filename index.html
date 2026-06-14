@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StarSteps — AI Learning for Children with Autism</title>
+  <meta name="description" content="StarSteps is an AI-powered learning companion for children on the autism spectrum. Meet Cosmo — a mood-aware AI friend who adapts to your child in real time." />
+  <meta property="og:title" content="StarSteps — AI Learning for Children with Autism" />
+  <meta property="og:description" content="Meet Cosmo, your child's AI learning companion. Mood-aware. Voice-first. Multi-subject. Built for kids on the autism spectrum." />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:        #0D2147;
+      --navy-mid:    #0F2D5E;
+      --navy-light:  #1A3A6E;
+      --gold:        #FFD700;
+      --gold-dim:    #F59E0B;
+      --teal:        #2DD4BF;
+      --purple:      #A78BFA;
+      --purple-dark: #7C3AED;
+      --pink:        #F472B6;
+      --moon-blue:   #60A5FA;
+      --soft-white:  #F1F5F9;
+      --dim:         #64748B;
+      --panel:       rgba(255,255,255,0.05);
+      --border:      rgba(255,255,255,0.10);
+      --radius:      16px;
+      --shadow:      0 4px 24px rgba(0,0,0,0.3);
+      --shadow-lg:   0 8px 48px rgba(0,0,0,0.45);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      color: var(--soft-white);
+      background: var(--navy);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── Starfield background ── */
+    .starfield {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background: var(--navy);
+      overflow: hidden;
+    }
+    .starfield::before, .starfield::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 25% 40%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 40% 20%, rgba(255,255,255,0.7) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 55% 55%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 70% 30%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 85% 70%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 15% 75%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 60% 85%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 35% 65%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 75% 50%, rgba(255,255,255,0.3) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 50% 10%, rgba(255,215,0,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 20% 90%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 80% 20%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 45% 45%, rgba(45,212,191,0.4) 0%, transparent 100%);
+    }
+    .starfield::after {
+      background-image:
+        radial-gradient(1px 1px at 5% 50%, rgba(255,255,255,0.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 30% 10%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 65% 75%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 92% 40%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 48% 92%, rgba(167,139,250,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 18% 30%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(2px 2px at 72% 12%, rgba(255,215,0,0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 38% 78%, rgba(255,255,255,0.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 82% 88%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 55% 35%, rgba(96,165,250,0.4) 0%, transparent 100%);
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(13,33,71,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 5vw;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 68px;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none;
+    }
+    .nav-logo img { width: 38px; height: 38px; object-fit: contain; }
+    .nav-logo-text {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.5rem; font-weight: 700;
+      color: var(--gold);
+      letter-spacing: -0.01em;
+    }
+    .nav-links { display: flex; gap: 2rem; align-items: center; }
+    .nav-links a {
+      text-decoration: none; color: rgba(255,255,255,0.6);
+      font-size: 0.95rem; font-weight: 600;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .btn-nav {
+      background: var(--gold) !important; color: var(--navy) !important;
+      padding: 0.5rem 1.3rem; border-radius: 999px;
+      font-size: 0.9rem !important; font-weight: 900 !important;
+      transition: transform 0.15s, box-shadow 0.15s !important;
+      box-shadow: 0 0 16px rgba(255,215,0,0.3) !important;
+    }
+    .btn-nav:hover { transform: translateY(-2px); box-shadow: 0 0 24px rgba(255,215,0,0.5) !important; }
+    .hamburger { display: none; background: none; border: none; cursor: pointer; padding: 4px; }
+    .hamburger span { display: block; width: 24px; height: 2px; background: var(--gold); margin: 5px 0; border-radius: 2px; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 0.85rem 2rem; border-radius: 999px;
+      font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1rem;
+      text-decoration: none; cursor: pointer; border: none;
+      transition: transform 0.18s, box-shadow 0.18s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-gold { background: var(--gold); color: var(--navy); box-shadow: 0 0 20px rgba(255,215,0,0.3); }
+    .btn-gold:hover { box-shadow: 0 0 32px rgba(255,215,0,0.5); }
+    .btn-outline-white { background: transparent; color: var(--soft-white); border: 2px solid rgba(255,255,255,0.3); }
+    .btn-outline-white:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-teal { background: var(--teal); color: var(--navy); box-shadow: 0 0 16px rgba(45,212,191,0.3); }
+    .btn-lg { padding: 1rem 2.4rem; font-size: 1.1rem; }
+
+    /* ── Sections ── */
+    section { padding: 5rem 5vw; position: relative; z-index: 1; }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      display: inline-block;
+      background: rgba(255,215,0,0.12); color: var(--gold);
+      border: 1px solid rgba(255,215,0,0.3);
+      font-size: 0.78rem; font-weight: 900; letter-spacing: 0.10em;
+      text-transform: uppercase; padding: 0.3rem 0.9rem; border-radius: 999px;
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      font-family: 'Fredoka', sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 700; color: var(--soft-white);
+      line-height: 1.2; margin-bottom: 1rem;
+    }
+    .section-sub { color: var(--dim); font-size: 1.05rem; max-width: 560px; line-height: 1.7; }
+    .text-center { text-align: center; }
+    .text-center .section-sub { margin: 0 auto; }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 6rem 5vw 5rem;
+      position: relative; z-index: 1;
+      background: linear-gradient(160deg, rgba(13,33,71,0) 0%, rgba(124,58,237,0.08) 50%, rgba(13,33,71,0) 100%);
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -100px; right: -100px;
+      width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(167,139,250,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(45,212,191,0.10); border: 1px solid rgba(45,212,191,0.25);
+      border-radius: 999px; padding: 0.35rem 1rem;
+      color: var(--teal); font-size: 0.85rem; font-weight: 700;
+      margin-bottom: 1.4rem;
+    }
+    .hero-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(1.3);} }
+    .hero h1 {
+      font-family: 'Fredoka', sans-serif;
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      font-weight: 700; line-height: 1.12;
+      color: var(--soft-white); margin-bottom: 1.2rem;
+    }
+    .hero h1 .highlight {
+      background: linear-gradient(90deg, var(--gold), var(--pink), var(--moon-blue));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p { color: rgba(255,255,255,0.6); font-size: 1.1rem; max-width: 480px; margin-bottom: 2rem; line-height: 1.7; }
+    .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .hero-stats {
+      display: flex; gap: 2rem; margin-top: 2.5rem;
+      padding-top: 2rem; border-top: 1px solid var(--border);
+    }
+    .hero-stat .num {
+      font-family: 'Fredoka', sans-serif; font-size: 1.7rem; font-weight: 700;
+      color: var(--gold); line-height: 1;
+    }
+    .hero-stat .label { color: var(--dim); font-size: 0.8rem; margin-top: 2px; }
+
+    /* Cosmo card */
+    .cosmo-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 28px; padding: 2rem;
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow-lg);
+    }
+    .cosmo-avatar-wrap {
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; margin-bottom: 1.2rem;
+    }
+    .cosmo-avatar-img {
+      width: 90px; height: 90px; object-fit: contain;
+      filter: drop-shadow(0 0 20px rgba(255,215,0,0.4));
+    }
+    .cosmo-name {
+      font-family: 'Fredoka', sans-serif; font-size: 1.4rem;
+      font-weight: 700; color: var(--gold); text-align: center;
+    }
+    .cosmo-role { color: var(--dim); font-size: 0.85rem; text-align: center; margin-bottom: 1.4rem; }
+    .cosmo-chat { display: flex; flex-direction: column; gap: 10px; }
+    .chat-bubble {
+      padding: 0.7rem 1rem; border-radius: 18px;
+      font-size: 0.88rem; max-width: 88%; line-height: 1.5;
+    }
+    .chat-child {
+      background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.9);
+      border-bottom-left-radius: 4px; align-self: flex-start;
+      border: 1px solid var(--border);
+    }
+    .chat-cosmo {
+      background: linear-gradient(135deg, var(--purple-dark), var(--purple));
+      color: var(--white); border-bottom-right-radius: 4px; align-self: flex-end;
+      box-shadow: 0 0 16px rgba(167,139,250,0.2);
+    }
+
+    /* ── Problem ── */
+    .problem { background: rgba(255,255,255,0.02); }
+    .problem-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+      margin-top: 3rem;
+    }
+    .problem-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--gold);
+      border-radius: var(--radius);
+      padding: 1.8rem; box-shadow: var(--shadow);
+      transition: transform 0.2s;
+    }
+    .problem-card:hover { transform: translateY(-4px); }
+    .problem-stat {
+      font-family: 'Fredoka', sans-serif; font-size: 2.8rem;
+      font-weight: 700; color: var(--gold); line-height: 1; margin-bottom: 0.5rem;
+    }
+    .problem-card h3 { font-size: 1rem; font-weight: 900; color: var(--soft-white); margin-bottom: 0.4rem; }
+    .problem-card p { color: var(--dim); font-size: 0.9rem; line-height: 1.6; }
+
+    /* ── Features ── */
+    .features-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+      margin-top: 3rem;
+    }
+    .feature-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.8rem; box-shadow: var(--shadow);
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--gold); }
+    .feature-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; margin-bottom: 1rem;
+    }
+    .feature-card h3 { font-family: 'Fredoka', sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--soft-white); margin-bottom: 0.5rem; }
+    .feature-card p { color: var(--dim); font-size: 0.92rem; line-height: 1.65; }
+
+    /* ── Cosmo Deep Dive ── */
+    .cosmo-section { background: rgba(167,139,250,0.04); }
+    .cosmo-layout {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+      align-items: center; margin-top: 3rem;
+    }
+    .cosmo-demo {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 28px; padding: 2.5rem; box-shadow: var(--shadow-lg);
+    }
+    .cosmo-demo-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+    .cosmo-demo-avatar {
+      width: 52px; height: 52px;
+    }
+    .cosmo-demo-avatar img { width: 52px; height: 52px; object-fit: contain; }
+    .cosmo-demo-name { font-family: 'Fredoka', sans-serif; font-size: 1rem; font-weight: 700; color: var(--gold); }
+    .cosmo-demo-status { color: var(--dim); font-size: 0.78rem; }
+    .demo-chat { display: flex; flex-direction: column; gap: 10px; }
+    .demo-bubble { padding: 0.75rem 1.1rem; border-radius: 18px; font-size: 0.88rem; line-height: 1.55; max-width: 85%; }
+    .db-child { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.9); border: 1px solid var(--border); border-bottom-left-radius: 4px; align-self: flex-start; }
+    .db-cosmo { background: linear-gradient(135deg, #7C3AED, var(--purple)); color: white; border-bottom-right-radius: 4px; align-self: flex-end; }
+    .mood-tag {
+      align-self: center;
+      background: rgba(45,212,191,0.10); border: 1px solid rgba(45,212,191,0.2);
+      border-radius: 999px; padding: 0.25rem 0.8rem;
+      color: var(--teal); font-size: 0.75rem; font-weight: 700;
+    }
+    .cosmo-bullets { list-style: none; display: flex; flex-direction: column; gap: 1.1rem; }
+    .cosmo-bullets li { display: flex; gap: 1rem; align-items: flex-start; }
+    .cosmo-bullet-icon {
+      width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+      background: rgba(255,215,0,0.10); border: 1px solid rgba(255,215,0,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; margin-top: 1px;
+    }
+    .cosmo-bullets strong { display: block; font-size: 0.95rem; color: var(--soft-white); margin-bottom: 2px; }
+    .cosmo-bullets span { font-size: 0.88rem; color: var(--dim); line-height: 1.55; }
+
+    /* ── Social Proof ── */
+    .social-proof { background: rgba(45,212,191,0.03); }
+    .proof-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+      margin-top: 3rem;
+    }
+    .proof-card {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.8rem; box-shadow: var(--shadow);
+    }
+    .proof-quote { font-size: 0.95rem; color: rgba(255,255,255,0.75); line-height: 1.7; margin-bottom: 1.2rem; font-style: italic; }
+    .proof-author { display: flex; align-items: center; gap: 10px; }
+    .proof-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(167,139,250,0.15); border: 1px solid rgba(167,139,250,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 1rem; color: var(--purple);
+    }
+    .proof-name { font-size: 0.88rem; font-weight: 900; color: var(--soft-white); }
+    .proof-role { font-size: 0.78rem; color: var(--dim); }
+    .stars { color: var(--gold); font-size: 0.9rem; margin-bottom: 0.8rem; letter-spacing: 1px; }
+
+    /* ── Pricing ── */
+    .pricing-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem;
+      margin-top: 3rem; align-items: start;
+    }
+    .pricing-card {
+      border-radius: var(--radius); padding: 1.8rem;
+      border: 1px solid var(--border); position: relative;
+      background: var(--panel);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .pricing-card:hover { transform: translateY(-4px); }
+    .pricing-card.featured { background: linear-gradient(160deg, rgba(124,58,237,0.2), rgba(167,139,250,0.1)); border-color: var(--purple); box-shadow: 0 0 40px rgba(167,139,250,0.2); }
+    .pricing-card.popular { border-color: var(--teal); box-shadow: 0 0 24px rgba(45,212,191,0.1); }
+    .pricing-card.institution { border-color: var(--moon-blue); }
+    .pricing-badge {
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      background: var(--gold); color: var(--navy);
+      font-size: 0.72rem; font-weight: 900; letter-spacing: 0.06em;
+      text-transform: uppercase; padding: 0.25rem 0.9rem; border-radius: 999px;
+      white-space: nowrap;
+    }
+    .pricing-name { font-size: 0.82rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.8rem; color: var(--dim); }
+    .pricing-card.featured .pricing-name { color: var(--purple); }
+    .pricing-card.popular .pricing-name { color: var(--teal); }
+    .pricing-card.institution .pricing-name { color: var(--moon-blue); }
+    .pricing-price { font-family: 'Fredoka', sans-serif; font-size: 2.4rem; font-weight: 700; line-height: 1; color: var(--soft-white); }
+    .pricing-card.featured .pricing-price { color: var(--purple); }
+    .pricing-card.popular .pricing-price { color: var(--teal); }
+    .pricing-period { font-size: 0.82rem; color: var(--dim); margin-bottom: 1.2rem; }
+    .pricing-divider { height: 1px; background: var(--border); margin-bottom: 1.2rem; }
+    .pricing-features { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; margin-bottom: 1.5rem; }
+    .pricing-features li { display: flex; align-items: flex-start; gap: 8px; font-size: 0.88rem; line-height: 1.5; color: rgba(255,255,255,0.75); }
+    .check { color: var(--teal); font-weight: 900; flex-shrink: 0; }
+    .pricing-cta { display: block; text-align: center; padding: 0.75rem; border-radius: 999px; font-weight: 900; font-size: 0.92rem; text-decoration: none; transition: all 0.2s; border: 1px solid var(--border); color: var(--soft-white); background: rgba(255,255,255,0.06); }
+    .pricing-cta:hover { background: rgba(255,255,255,0.12); }
+    .pricing-card.featured .pricing-cta { background: var(--purple-dark); color: white; border-color: var(--purple); }
+    .pricing-card.featured .pricing-cta:hover { background: var(--purple); }
+    .pricing-card.popular .pricing-cta { background: rgba(45,212,191,0.15); color: var(--teal); border-color: rgba(45,212,191,0.4); }
+    .pricing-card.popular .pricing-cta:hover { background: rgba(45,212,191,0.25); }
+    .pricing-note { text-align: center; color: var(--dim); font-size: 0.85rem; margin-top: 1.5rem; }
+    .pricing-note a { color: var(--teal); text-decoration: none; }
+
+    /* ── CTA Banner ── */
+    .cta-banner {
+      text-align: center; padding: 6rem 5vw;
+      background: linear-gradient(160deg, rgba(124,58,237,0.15) 0%, rgba(45,212,191,0.05) 100%);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      position: relative; z-index: 1;
+    }
+    .cta-logo { width: 80px; height: 80px; object-fit: contain; margin: 0 auto 1.5rem; display: block; filter: drop-shadow(0 0 24px rgba(255,215,0,0.4)); }
+    .cta-banner h2 {
+      font-family: 'Fredoka', sans-serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700; color: var(--soft-white); margin-bottom: 1rem;
+    }
+    .cta-banner h2 span { color: var(--gold); }
+    .cta-banner p { color: var(--dim); font-size: 1.05rem; margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto; }
+    .email-form { display: flex; gap: 0.8rem; max-width: 460px; margin: 0 auto; }
+    .email-form input {
+      flex: 1; padding: 0.85rem 1.2rem; border-radius: 999px;
+      border: 1px solid var(--border); font-size: 0.95rem;
+      background: rgba(255,255,255,0.06); color: var(--soft-white);
+      outline: none; font-family: 'Nunito', sans-serif;
+    }
+    .email-form input::placeholder { color: var(--dim); }
+    .email-form input:focus { border-color: var(--gold); background: rgba(255,215,0,0.05); }
+    .early-access-note { color: var(--dim); font-size: 0.8rem; margin-top: 1rem; }
+
+    /* ── Footer ── */
+    footer {
+      background: rgba(255,255,255,0.02);
+      border-top: 1px solid var(--border);
+      color: var(--dim); padding: 3rem 5vw 2rem;
+      position: relative; z-index: 1;
+    }
+    .footer-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 3rem;
+      padding-bottom: 2rem; border-bottom: 1px solid var(--border);
+    }
+    .footer-brand .logo {
+      display: flex; align-items: center; gap: 8px;
+      font-family: 'Fredoka', sans-serif; font-size: 1.4rem; font-weight: 700;
+      color: var(--gold); margin-bottom: 0.8rem; text-decoration: none;
+    }
+    .footer-brand .logo img { width: 30px; height: 30px; object-fit: contain; }
+    .footer-brand p { font-size: 0.88rem; line-height: 1.65; max-width: 280px; }
+    .footer-col h4 { color: var(--soft-white); font-size: 0.85rem; font-weight: 900; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 1rem; }
+    .footer-col a { display: block; color: var(--dim); text-decoration: none; font-size: 0.88rem; margin-bottom: 0.55rem; transition: color 0.2s; }
+    .footer-col a:hover { color: var(--gold); }
+    .footer-bottom {
+      max-width: 1100px; margin: 1.5rem auto 0;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.82rem;
+    }
+    .footer-bottom a { color: var(--dim); text-decoration: none; }
+    .footer-bottom a:hover { color: var(--gold); }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .cosmo-card { display: none; }
+      .problem-grid, .features-grid, .proof-grid { grid-template-columns: 1fr 1fr; }
+      .pricing-grid { grid-template-columns: 1fr 1fr; }
+      .cosmo-layout { grid-template-columns: 1fr; }
+      .footer-inner { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      nav { padding: 0 4vw; }
+      .nav-links { display: none; }
+      .hamburger { display: block; }
+      .nav-links.open {
+        display: flex; flex-direction: column;
+        position: absolute; top: 68px; left: 0; right: 0;
+        background: rgba(13,33,71,0.98); padding: 1rem 4vw 1.5rem;
+        border-bottom: 1px solid var(--border);
+        gap: 1rem; align-items: flex-start; z-index: 99;
+      }
+      .hero { padding: 4rem 4vw 3rem; }
+      .hero-stats { gap: 1.2rem; }
+      section { padding: 3.5rem 4vw; }
+      .problem-grid, .features-grid, .proof-grid, .pricing-grid { grid-template-columns: 1fr; }
+      .email-form { flex-direction: column; }
+      .footer-inner { grid-template-columns: 1fr; gap: 2rem; }
+      .footer-bottom { flex-direction: column; gap: 0.5rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="starfield"></div>
+
+  <!-- ── Nav ── -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <img src="assets/logo.png" alt="StarSteps Logo" />
+      <span class="nav-logo-text">StarSteps</span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="#features">Features</a>
+      <a href="#cosmo">Meet Cosmo</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#early-access" class="btn-nav">Try Free</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ── Hero ── -->
+  <section class="hero" id="home">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="dot"></span>
+          Now in Beta &mdash; Limited Early Access
+        </div>
+        <h1>Learning that <span class="highlight">grows with</span> your child</h1>
+        <p>StarSteps is an AI-powered learning companion for children on the autism spectrum. Meet Cosmo &mdash; a mood-aware AI friend who adapts in real time, speaks their language, and makes learning feel like an adventure.</p>
+        <div class="hero-ctas">
+          <a href="#early-access" class="btn btn-gold btn-lg">Start Free Trial</a>
+          <a href="#cosmo" class="btn btn-outline-white btn-lg">Meet Cosmo</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat"><div class="num">1 in 36</div><div class="label">U.S. kids with ASD</div></div>
+          <div class="hero-stat"><div class="num">7</div><div class="label">Subjects covered</div></div>
+          <div class="hero-stat"><div class="num">0</div><div class="label">Competitors with AI mood detection</div></div>
+        </div>
+      </div>
+      <div class="cosmo-card">
+        <div class="cosmo-avatar-wrap">
+          <img class="cosmo-avatar-img" src="assets/logo.png" alt="Cosmo" />
+        </div>
+        <div class="cosmo-name">Cosmo ⭐</div>
+        <div class="cosmo-role">Your child's AI learning companion</div>
+        <div class="cosmo-chat">
+          <div class="chat-bubble chat-child">I don't want to do math today</div>
+          <div class="chat-bubble chat-cosmo">That's okay! Want to try something with space and numbers? I found something cool about Mars that uses the same skills. 🚀</div>
+          <div class="chat-bubble chat-child">Yeah okay I like space</div>
+          <div class="chat-bubble chat-cosmo">Perfect! Did you know the distance from Earth to Mars changes every day? Let's figure out today's distance together! ⭐</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Problem ── -->
+  <section class="problem">
+    <div class="section-inner">
+      <div class="text-center">
+        <div class="section-label">The Problem</div>
+        <h2 class="section-title">Most apps weren't built for your child</h2>
+        <p class="section-sub">Existing tools are narrow, generic, and don't respond to how your child is actually feeling in the moment.</p>
+      </div>
+      <div class="problem-grid">
+        <div class="problem-card">
+          <div class="problem-stat">80%</div>
+          <h3>Cover only one skill</h3>
+          <p>Most autism apps focus on either math, or speech, or behavior &mdash; never the full picture a child needs to thrive.</p>
+        </div>
+        <div class="problem-card">
+          <div class="problem-stat">0</div>
+          <h3>Consumer apps with mood AI</h3>
+          <p>Not a single competitor detects when your child is frustrated or bored and adapts the experience in real time.</p>
+        </div>
+        <div class="problem-card">
+          <div class="problem-stat">$300+</div>
+          <h3>Hardware cost for top VR tools</h3>
+          <p>The leading ASD-specific apps require expensive hardware most families can't access. StarSteps runs in any Chrome browser.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Features ── -->
+  <section id="features">
+    <div class="section-inner">
+      <div class="text-center">
+        <div class="section-label">Features</div>
+        <h2 class="section-title">Everything in one place</h2>
+        <p class="section-sub">The first app that combines AI adaptation, multi-subject learning, voice control, and a real reward economy — built specifically for autistic children.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(167,139,250,0.15);">🧠</div>
+          <h3>Cosmo AI Companion</h3>
+          <p>Detects frustration and boredom in real time. Adjusts tone, difficulty, and pacing automatically so your child never gets stuck or bored.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(96,165,250,0.15);">🎙️</div>
+          <h3>Voice-First Control</h3>
+          <p>Navigate the entire app by voice. No typing required &mdash; critical for children who struggle with fine motor skills or aren't yet reading.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(45,212,191,0.15);">📚</div>
+          <h3>Multi-Subject Learning</h3>
+          <p>Math, reading, science, shapes, geography, occupational therapy, and speech &mdash; all in one app with structured, predictable modules.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(255,215,0,0.15);">⭐</div>
+          <h3>Cosmo's Reward Shop</h3>
+          <p>Earn stars, buy avatar outfits, profile frames, badges, and titles. A real economy your child will care about &mdash; not just generic stickers.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(244,114,182,0.15);">💡</div>
+          <h3>Adaptive Learning Profiles</h3>
+          <p>Cosmo builds a personal profile for your child after every session &mdash; tracking strengths, interests, and what keeps them engaged.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(45,212,191,0.12);">💻</div>
+          <h3>No Install Required</h3>
+          <p>Runs in any Chrome browser today. No App Store, no downloads, no special hardware. Works on Chromebooks, PCs, Macs, and tablets.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Cosmo Deep Dive ── -->
+  <section class="cosmo-section" id="cosmo">
+    <div class="section-inner">
+      <div>
+        <div class="section-label">Meet Cosmo</div>
+        <h2 class="section-title">The AI companion who actually listens</h2>
+        <p class="section-sub">Cosmo isn't a chatbot. It's an AI learning companion designed from the ground up for children on the autism spectrum &mdash; patient, consistent, and always in your child's corner.</p>
+      </div>
+      <div class="cosmo-layout">
+        <div class="cosmo-demo">
+          <div class="cosmo-demo-header">
+            <div class="cosmo-demo-avatar">
+              <img src="assets/logo.png" alt="Cosmo" />
+            </div>
+            <div>
+              <div class="cosmo-demo-name">Cosmo ⭐</div>
+              <div class="cosmo-demo-status">● Online &mdash; Learning session active</div>
+            </div>
+          </div>
+          <div class="demo-chat">
+            <div class="demo-bubble db-child">take me to reading</div>
+            <div class="demo-bubble db-cosmo">Sure! We left off on chapter 3. Do you want to keep going or try something new today?</div>
+            <div class="demo-bubble db-child">this is too hard</div>
+            <div class="mood-tag">✨ Cosmo detects frustration — adjusting...</div>
+            <div class="demo-bubble db-cosmo">I hear you &mdash; let's make it easier. How about I read the first part with you and we tackle it together? You can do this. 💙</div>
+            <div class="demo-bubble db-child">ok yeah</div>
+            <div class="demo-bubble db-cosmo">Let's go! You finished 3 pages last time &mdash; I bet we can do 4 today. ⭐</div>
+          </div>
+        </div>
+        <ul class="cosmo-bullets">
+          <li>
+            <div class="cosmo-bullet-icon">🧠</div>
+            <div>
+              <strong>Real-Time Mood Detection</strong>
+              <span>Cosmo monitors interaction patterns and adjusts immediately when frustration, boredom, or overwhelm appears &mdash; no parent intervention needed.</span>
+            </div>
+          </li>
+          <li>
+            <div class="cosmo-bullet-icon">📋</div>
+            <div>
+              <strong>Personal Learning Profile</strong>
+              <span>After every session, Cosmo updates your child's profile &mdash; capturing strengths, interests, special topics, and the right level of challenge.</span>
+            </div>
+          </li>
+          <li>
+            <div class="cosmo-bullet-icon">🎙️</div>
+            <div>
+              <strong>Natural Language Navigation</strong>
+              <span>"Take me to math," "show me my rewards," "I'm done" &mdash; Cosmo understands natural speech and navigates the whole app by voice.</span>
+            </div>
+          </li>
+          <li>
+            <div class="cosmo-bullet-icon">💙</div>
+            <div>
+              <strong>Consistent & Predictable</strong>
+              <span>Cosmo has the same warm, patient personality every single time. Many autistic children specifically value that kind of reliable, consistent presence.</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Social Proof ── -->
+  <section class="social-proof">
+    <div class="section-inner">
+      <div class="text-center">
+        <div class="section-label">Early Feedback</div>
+        <h2 class="section-title">What parents are saying</h2>
+      </div>
+      <div class="proof-grid">
+        <div class="proof-card">
+          <div class="stars">★★★★★</div>
+          <p class="proof-quote">"My son has never stayed engaged with an app for more than 5 minutes. He asked to use StarSteps again the next day. That has never happened."</p>
+          <div class="proof-author">
+            <div class="proof-avatar">SM</div>
+            <div>
+              <div class="proof-name">Sarah M.</div>
+              <div class="proof-role">Mother of Jake, age 7 (ASD diagnosis at 3)</div>
+            </div>
+          </div>
+        </div>
+        <div class="proof-card">
+          <div class="stars">★★★★★</div>
+          <p class="proof-quote">"The voice input is a game changer. My daughter can't type yet but she can talk to Cosmo naturally. I didn't think that was possible in an app like this."</p>
+          <div class="proof-author">
+            <div class="proof-avatar">DR</div>
+            <div>
+              <div class="proof-name">David R.</div>
+              <div class="proof-role">Father of Emma, age 6 (ASD + dyslexia)</div>
+            </div>
+          </div>
+        </div>
+        <div class="proof-card">
+          <div class="stars">★★★★★</div>
+          <p class="proof-quote">"As an ABA therapist I've recommended dozens of apps. StarSteps is the first one I've seen that actually adapts when a child is struggling instead of just moving on."</p>
+          <div class="proof-author">
+            <div class="proof-avatar">KL</div>
+            <div>
+              <div class="proof-name">K. Lawson, BCBA</div>
+              <div class="proof-role">Board Certified Behavior Analyst, 9 years</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Pricing ── -->
+  <section id="pricing">
+    <div class="section-inner">
+      <div class="text-center">
+        <div class="section-label">Pricing</div>
+        <h2 class="section-title">Simple, honest pricing</h2>
+        <p class="section-sub">Start free. Upgrade when you're ready. Cancel any time. No tricks, no upsells mid-session.</p>
+      </div>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <div class="pricing-name">Free Trial</div>
+          <div class="pricing-price">Free</div>
+          <div class="pricing-period">7 days, no card required</div>
+          <div class="pricing-divider"></div>
+          <ul class="pricing-features">
+            <li><span class="check">✓</span> Core subjects access</li>
+            <li><span class="check">✓</span> Cosmo basic chat</li>
+            <li><span class="check">✓</span> 5 starter shop items</li>
+            <li><span class="check">✓</span> 1 child profile</li>
+          </ul>
+          <a href="#early-access" class="pricing-cta">Start Free Trial</a>
+        </div>
+        <div class="pricing-card popular">
+          <div class="pricing-badge">Most Popular</div>
+          <div class="pricing-name">Family</div>
+          <div class="pricing-price">$12.99</div>
+          <div class="pricing-period">per month &mdash; cancel any time</div>
+          <div class="pricing-divider"></div>
+          <ul class="pricing-features">
+            <li><span class="check">✓</span> All subjects, all content</li>
+            <li><span class="check">✓</span> Cosmo AI with mood detection</li>
+            <li><span class="check">✓</span> Full shop &amp; reward economy</li>
+            <li><span class="check">✓</span> 1 child profile</li>
+            <li><span class="check">✓</span> Voice-first navigation</li>
+          </ul>
+          <a href="#early-access" class="pricing-cta">Get Started</a>
+        </div>
+        <div class="pricing-card featured">
+          <div class="pricing-name">Annual</div>
+          <div class="pricing-price">$99</div>
+          <div class="pricing-period">per year &mdash; save 37%</div>
+          <div class="pricing-divider"></div>
+          <ul class="pricing-features">
+            <li><span class="check">✓</span> Everything in Family</li>
+            <li><span class="check">✓</span> Up to 3 child profiles</li>
+            <li><span class="check">✓</span> Priority support</li>
+            <li><span class="check">✓</span> Early access to new subjects</li>
+          </ul>
+          <a href="#early-access" class="pricing-cta">Best Value</a>
+        </div>
+        <div class="pricing-card institution">
+          <div class="pricing-name">Institution</div>
+          <div class="pricing-price">Custom</div>
+          <div class="pricing-period">per school or clinic / year</div>
+          <div class="pricing-divider"></div>
+          <ul class="pricing-features">
+            <li><span class="check">✓</span> Unlimited child profiles</li>
+            <li><span class="check">✓</span> Teacher &amp; admin dashboard</li>
+            <li><span class="check">✓</span> Progress &amp; outcome reports</li>
+            <li><span class="check">✓</span> COPPA compliance documentation</li>
+          </ul>
+          <a href="mailto:n8wray@gmail.com" class="pricing-cta">Contact Us</a>
+        </div>
+      </div>
+      <p class="pricing-note">Comparable apps charge $29.99/month. StarSteps gives you more, for less. &mdash; Questions? Email <a href="mailto:n8wray@gmail.com">n8wray@gmail.com</a></p>
+    </div>
+  </section>
+
+  <!-- ── CTA Banner ── -->
+  <section class="cta-banner" id="early-access">
+    <div class="section-inner">
+      <img class="cta-logo" src="assets/logo.png" alt="StarSteps" />
+      <div class="section-label" style="background:rgba(255,215,0,0.12);color:var(--gold);">Early Access</div>
+      <h2>Give your child a learning companion<br>that <span>truly gets them</span></h2>
+      <p>Join our early access list. Be first to try StarSteps when we launch on iOS and Android &mdash; plus get founding member pricing locked in forever.</p>
+      <form class="email-form" onsubmit="handleSignup(event)">
+        <input type="email" id="emailInput" placeholder="your@email.com" required autocomplete="email" />
+        <button type="submit" class="btn btn-gold">Get Early Access</button>
+      </form>
+      <p class="early-access-note" id="signupMsg">No spam. Unsubscribe any time. We'll only email you about StarSteps.</p>
+    </div>
+  </section>
+
+  <!-- ── Footer ── -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="#" class="logo">
+          <img src="assets/logo.png" alt="StarSteps" />
+          StarSteps
+        </a>
+        <p>AI-powered learning for children on the autism spectrum. Built with love by a team that believes every child deserves a learning companion that truly understands them.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <a href="#features">Features</a>
+        <a href="#cosmo">Meet Cosmo</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#early-access">Early Access</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a href="mailto:n8wray@gmail.com">n8wray@gmail.com</a>
+        <a href="#early-access">Schools &amp; Clinics</a>
+        <a href="mailto:n8wray@gmail.com">Press &amp; Media</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 StarSteps. All rights reserved.</span>
+      <span>
+        <a href="#">Privacy Policy</a> &nbsp;&middot;&nbsp;
+        <a href="#">Terms of Service</a> &nbsp;&middot;&nbsp;
+        <a href="#">AI Disclosure</a>
+      </span>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('hamburger').addEventListener('click', function() {
+      document.getElementById('navLinks').classList.toggle('open');
+    });
+    function handleSignup(e) {
+      e.preventDefault();
+      const email = document.getElementById('emailInput').value;
+      const msg = document.getElementById('signupMsg');
+      msg.textContent = "You're on the list! ⭐ We'll be in touch soon.";
+      msg.style.color = '#2DD4BF';
+      document.getElementById('emailInput').value = '';
+      console.log('Signup:', email);
+    }
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', function(e) {
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          document.getElementById('navLinks').classList.remove('open');
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
